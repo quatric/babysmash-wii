@@ -39,7 +39,8 @@ CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.bin)))
 export LD	:=	$(CC)
 export OFILES_BIN	:=	$(addsuffix .o,$(BINFILES))
-export OFILES	:=	$(OFILES_BIN) $(CFILES:.c=.o)
+export OFILES_SRC	:=	$(CFILES:.c=.o)
+export OFILES	:=	$(OFILES_BIN) $(OFILES_SRC)
 export HFILES	:=	$(addsuffix .h,$(subst .,_,$(BINFILES)))
 
 export INCLUDE	:=	$(foreach dir,$(INCLUDES), -iquote $(CURDIR)/$(dir)) \
@@ -73,7 +74,7 @@ DEPENDS	:=	$(OFILES:.o=.d)
 $(OUTPUT).dol: $(OUTPUT).elf
 $(OUTPUT).elf: $(OFILES)
 
-$(OFILES) : $(HFILES)
+$(OFILES_SRC) : $(HFILES)
 
 %.bin.o %_bin.h : %.bin
 	@echo $(notdir $<)

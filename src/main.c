@@ -474,9 +474,10 @@ static void draw_info_label(void)
         "Hold Ctrl-Shift-Alt-O (or + and -) 3 secs for options",
         "Alt-F4 (or hold HOME 2 secs) to exit",
     };
-    const float h = 10;
+    const float h = 14, step = 22;
+    gfx_panel(14, 12, 612, 4 * step + 6, RGBA(24, 24, 24, 255), RGBA(255, 230, 0, 255));
     for (int i = 0; i < 4; i++)
-        gfx_text(12 + gfx_text_width(h, lines[i]) / 2, 8 + i * 13, h, lines[i], RGBA(255, 230, 0, 255));
+        gfx_text(SCR_W / 2, 16 + i * step, h, lines[i], RGBA(255, 230, 0, 255));
 }
 
 static void draw(float fps)
@@ -489,7 +490,7 @@ static void draw(float fps)
     if (show_fps) {
         char buf[48];
         snprintf(buf, sizeof buf, "FPS: %d | Shapes: %d", (int)(fps + 0.5f), nfig + ndiscs);
-        gfx_text(12 + gfx_text_width(12, buf) / 2, SCR_H - 22, 12, buf, RGBA(40, 40, 40, 255));
+        gfx_text(12 + gfx_text_width(15, buf) / 2, SCR_H - 26, 15, buf, RGBA(40, 40, 40, 255));
     }
     if (shot_req) {                                      /* figures only: no menu, cursor or toast */
         char name[64];

@@ -369,13 +369,14 @@ void gfx_text(float cx, float y, float h, const char *s, u32 rgba)
     const int n = strlen(s);
     const float x = cx - n * adv * 0.5f + adv * 0.5f;
     const float k = h / 7.0f;
+    const float fillpx = h * 0.13f + 1.0f;      /* bold enough to survive composite/480i */
     for (int pass = 0; pass < 2; pass++) {
         const u32 c = pass == 0 ? RGBA(0, 0, 0, rgba & 255) : rgba;
         for (int i = 0; i < n; i++) {
             const int gi = glyph_index(s[i]);
             if (gi >= 0)
                 stroke_glyph(&glyphs[gi], x + i * adv, y + h * 0.5f, k, 0,
-                             pass == 0 ? 1.1f : 0.55f, 0, 0, c);
+                             (pass == 0 ? fillpx + 2.6f : fillpx) / k, 0, 0, c);
         }
         b_flush();
     }

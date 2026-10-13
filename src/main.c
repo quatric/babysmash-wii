@@ -240,14 +240,17 @@ static void add_disc(float x, float y)
 
 /* ---- options screen (Options.xaml) ------------------------------------------------ */
 enum { R_SOUNDS, R_CURSOR, R_UPPER, R_FACES, R_EFFECTS, R_MDRAW, R_FADE, R_FADE_AFTER,
-       R_CLEAR, R_OK, R_CANCEL, R_COUNT };
+       R_CLEAR, R_SHOT, R_OK, R_CANCEL, R_COUNT };
 #define MENU_X 70
 #define MENU_Y 40
 #define MENU_W 500
-#define MENU_ROW 27
+#define MENU_ROW 26
 #define MENU_ROWS_Y (MENU_Y + 64)
 
 static bool menu_open;
+static bool shot_req;                                    /* capture on the next draw */
+static char toast[96];
+static float toast_t;
 static int menu_sel;
 static Settings cfg_backup;
 static bool opt_block;                                   /* gesture must be released first */
@@ -268,6 +271,7 @@ static void row_text(int r, char *buf, int n)
     case R_FADE: snprintf(buf, n, "Fade shapes away: %s", onoff[cfg.fade_away]); break;
     case R_FADE_AFTER: snprintf(buf, n, "Fade shapes away in: < %d secs >", cfg.fade_after); break;
     case R_CLEAR: snprintf(buf, n, "Start removing after: < %d shapes >", cfg.clear_after); break;
+    case R_SHOT: snprintf(buf, n, "Save screenshot"); break;
     case R_OK: snprintf(buf, n, "OK (save)"); break;
     default: snprintf(buf, n, "Cancel"); break;
     }
@@ -302,6 +306,7 @@ static void row_adjust(int r, int d)                     /* d = +1 / -1; toggles
         if (cfg.clear_after < 1) cfg.clear_after = 1;
         if (cfg.clear_after > MAX_CLEAR_AFTER) cfg.clear_after = MAX_CLEAR_AFTER;
         break;
+    case R_SHOT: shot_req = true; break;
     case R_OK: menu_close(true); break;
     case R_CANCEL: menu_close(false); break;
     }
@@ -327,7 +332,7 @@ static void menu_update(void)
 
 static void menu_draw(void)
 {
-    gfx_panel(MENU_X, MENU_Y, MENU_W, 395, RGBA(48, 48, 48, 255), RGBA(0, 0, 0, 255));
+    gfx_panel(MENU_X, MENU_Y, MENU_W, 410, RGBA(48, 48, 48, 255), RGBA(0, 0, 0, 255));
     gfx_text(MENU_X + MENU_W / 2, MENU_Y + 12, 22, "BabySmash! Options", RGBA(255, 255, 255, 255));
     for (int i = 0; i < R_COUNT; i++) {
         const float y = MENU_ROWS_Y + i * MENU_ROW;
@@ -338,7 +343,7 @@ static void menu_draw(void)
         gfx_text(MENU_X + 20 + gfx_text_width(h, buf) / 2, y + 5, h, buf,
                  i == menu_sel ? RGBA(255, 255, 255, 255) : RGBA(209, 209, 209, 255));
     }
-    gfx_text(MENU_X + MENU_W / 2, MENU_Y + 365, 12, "D-pad/arrows change, A/Enter select, B/Esc cancel",
+    gfx_text(MENU_X + MENU_W / 2, MENU_Y + 380, 12, "D-pad/arrows change, A/Enter select, B/Esc cancel",
              RGBA(180, 180, 180, 255));
 }
 
@@ -361,6 +366,14 @@ static void update(float dt)
             snd_bee(false);
         }
     }
+
+    /* screenshot: F12 / Print Screen, or hold 1 + 2 together for 2 seconds */
+    static float shot_t;
+    static bool shot_block;
+    if (in.shot_key) shot_req = true;
+    if (!in.shot_held) { shot_t = 0; shot_block = false; }
+    else if (!shot_block && (shot_t += dt) >= EXIT_HOLD) { shot_req = true; shot_block = true; }
+    if (toast_t > 0) toast_t -= dt;
 
     for (int i = 0; i < nfig; i++) {
         Fig *f = &figs[i];
@@ -478,7 +491,24 @@ static void draw(float fps)
         snprintf(buf, sizeof buf, "FPS: %d | Shapes: %d", (int)(fps + 0.5f), nfig + ndiscs);
         gfx_text(12 + gfx_text_width(12, buf) / 2, SCR_H - 22, 12, buf, RGBA(40, 40, 40, 255));
     }
+    if (shot_req) {                                      /* figures only: no menu, cursor or toast */
+        char name[64];
+        shot_req = false;
+        if (screenshot_save(name, sizeof name)) {
+            snprintf(toast, sizeof toast, "Saved %s", name);
+            snd_play(SND_RISING);
+        } else {
+            snprintf(toast, sizeof toast, "Could not save - no writable SD/USB");
+            snd_play(SND_FALLING);
+        }
+        toast_t = 3.0f;
+    }
     if (menu_open) menu_draw();
+    if (toast_t > 0) {
+        const float w = gfx_text_width(14, toast) + 24;
+        gfx_panel((SCR_W - w) / 2, 6, w, 26, RGBA(0, 0, 0, 255), RGBA(255, 255, 255, 255));
+        gfx_text(SCR_W / 2, 11, 14, toast, RGBA(255, 255, 255, 255));
+    }
     if (exit_progress > 0)
         gfx_bar(SCR_W / 2 - 120, SCR_H - 40, 240, 14, exit_progress, RGBA(220, 40, 40, 255));
     if (in.cursor_on) gfx_cursor(in.x, in.y, cfg.cursor);
@@ -526,8 +556,10 @@ int main(int argc, char **argv)
                 in.smash[in.nsmash++] = txt[step++ % sizeof txt];
                 if (step == 12) { in.x = figs[nfig - 1].x; in.y = figs[nfig - 1].y; in.click_down = true; }
                 if (step == 1) { in.opt_held = true; opt_t = OPTIONS_HOLD; }
+                if (step == 2) in.shot_key = true;
                 if (step == 3) in.nav |= NAV_DOWN;
                 if (step == 4) in.nav |= NAV_RIGHT;
+                if (step == 40) quit_flag = true;
             }
         }
 #endif

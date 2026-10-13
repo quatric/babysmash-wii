@@ -51,16 +51,26 @@ Same controller set as the GlowWii homebrew app, plus USB mouse and keyboard:
 ## Speech
 
 The original speaks letters, colours, shapes and words with Windows text-to-speech. The Wii can't do
-that, so the clips are synthesised on your computer and baked in:
+that, so the clips are synthesised with [espeak-ng](https://github.com/espeak-ng/espeak-ng) on a
+computer and baked in:
 
-    ./scripts/gen_speech.sh            # letters, digits, colours, shapes -> data/speech.bin
-    make                               # embeds it in boot.dol
-    ./scripts/gen_speech.sh --words    # optional: ~1800 dictionary words -> speech/words/
-                                       # copy `speech/` to apps/babysmash/speech on the SD/USB drive
+* `data/speech.bin` (committed, ~1 MB) holds letters, digits, colours and shapes and is linked into
+  `boot.dol`, so speech works out of the box.
+* Dictionary words are spoken from `apps/babysmash/speech/words/*.bin` on the SD card / USB drive
+  (1810 clips, ~44 MB). Release downloads and CI artifacts include them; without them a detected
+  word plays the rising jingle instead.
 
-`ENGINE=say` (default, macOS voice `$VOICE`) sounds natural but Apple's voices must not be
-redistributed; `ENGINE=espeak-ng` is robotic but freely redistributable. `data/speech.bin` is
-committed as an empty stub; without clips the app falls back to laughter (and the rising jingle for words).
+Regenerate with `./scripts/gen_speech.sh` (pack) and `./scripts/gen_speech.sh --words`; both need
+espeak-ng, ffmpeg and python3. `ENGINE=say` uses a macOS voice instead (nicer, but keep that result
+private - Apple's voices can't be redistributed).
+
+## Screenshots
+
+Like Kid Pix for Wii, screenshots are numbered PNGs (`babysmash-001.png`, ...) in
+`apps/babysmash/saves/` on the SD card (or the USB drive if there is no SD). Take one from the
+options screen ("Save screenshot"), with **F12** / **Print Screen** on a keyboard, or by holding
+**1 + 2** together on a controller for two seconds. The picture has only the shapes and letters -
+no menu, cursor or toast - and a message says whether it was saved.
 
 ## Not ported (Windows-only)
 
@@ -77,6 +87,8 @@ Needs devkitPro with devkitPPC and libogc, plus a few portlibs built into `./por
     make                                     # -> boot.dol
     make dist                                # -> dist/apps/babysmash (copy `apps` to the SD card)
 
+`scripts/make_icon.py` redraws `icon.png`.
+
 `make EXTRA_CFLAGS=-DAUTOTEST` builds a variant that fakes key presses and a click, handy for
 checking rendering in Dolphin without a controller.
 
@@ -86,6 +98,6 @@ to raw 22.05 kHz mono, and the word list).
 ## Credits
 
 Original game, sounds and word list: Scott Hanselman, MIT (see `LICENSE.babysmash`).
-Controller libraries: [libwiidrc](https://github.com/FIX94/libwiidrc),
+Speech: [espeak-ng](https://github.com/espeak-ng/espeak-ng) (GPL). Controller libraries: [libwiidrc](https://github.com/FIX94/libwiidrc),
 [libwupc](https://github.com/FIX94/libwupc), [libsicksaxis](https://github.com/xerpi/libsicksaxis),
 [GRRLIB](https://github.com/GRRLIB/GRRLIB).

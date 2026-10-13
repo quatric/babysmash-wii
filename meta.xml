@@ -1,9 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <app version="1">
   <name>BabySmash</name>
-  <coder>BabySmash Wii port</coder>
-  <version>0.1</version>
+  <coder>quatric</coder>
+  <version>0.2.0</version>
   <release_date>20261013000000</release_date>
   <short_description>Let your baby smash buttons safely</short_description>
-  <long_description>A Wii port of Scott Hanselman's BabySmash. Mash any button, key or mouse button and colourful shapes, letters and numbers pop up with giggles. Supports Wiimote, Nunchuk, Classic Controller, GameCube pad, Wii U Pro Controller, Wii U GamePad, DualShock 3, USB mouse and USB keyboard. Hold HOME (or Esc) for 2 seconds to exit.</long_description>
+  <long_description>A Wii port of Scott Hanselman's BabySmash. Mash any button, key or mouse button and colourful shapes, letters and numbers pop up with giggles and spoken names. Type a word and the letters line up and say it.
+
+Works with Wiimote (IR pointer), Nunchuk, Classic Controller, GameCube pad, Wii U Pro Controller, Wii U GamePad, DualShock 3, USB mouse and USB keyboard.
+
+Hold Ctrl-Shift-Alt-O (or + and - together, or all three mouse buttons) for 3 seconds for options, including Save screenshot (also F12 / Print Screen, or hold 1 and 2 for 2 seconds). Quit with Alt-F4, or hold HOME for 2 seconds.
+
+Original BabySmash by Scott Hanselman (MIT). Spoken clips by espeak-ng.</long_description>
 </app>

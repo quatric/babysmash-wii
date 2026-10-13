@@ -235,6 +235,7 @@ void input_update(void)
     bool active = false;
     u32 nav = 0;
     bool opt = false;
+    in.shot_key = false;
     best_mag = 0;
     best_src = NULL;
     in.wheel = 0;
@@ -368,6 +369,7 @@ void input_update(void)
             else if (code == 0x29) nav |= NAV_BACK;
             if (mod_ctrl() && mod_shift() && mod_alt()) continue;       /* arming the options gesture */
             if (mod_alt() && code == 0x3d) continue;                    /* Alt-F4 */
+            if (code == 0x45 || code == 0x46) { in.shot_key = true; continue; }   /* F12 / PrtSc */
             smash_push(hid_to_char(code));
             in.source = "Keyboard";
             active = true;
@@ -414,6 +416,7 @@ void input_update(void)
         if ((held & (IN_PLUS | IN_MINUS)) == (IN_PLUS | IN_MINUS)) opt = true;
         in.nav = nav;
         in.opt_held = opt;
+        in.shot_held = (held & (IN_1 | IN_2)) == (IN_1 | IN_2);
         in.click_down = (down & IN_A) != 0;
         in.click_held = (held & IN_A) != 0;
         in.click_up = (~held & prev_held & IN_A) != 0;

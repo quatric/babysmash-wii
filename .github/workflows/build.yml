@@ -18,7 +18,7 @@ jobs:
       - name: Install build tools
         run: |
           apt-get update
-          apt-get install -y --no-install-recommends git python3 make ca-certificates
+          apt-get install -y --no-install-recommends git python3 make ca-certificates espeak-ng ffmpeg zip
 
       - name: Build GRRLIB and controller libraries (libwiidrc, libwupc, libsicksaxis)
         run: |
@@ -27,6 +27,9 @@ jobs:
 
       - name: Build boot.dol
         run: make
+
+      - name: Synthesise dictionary word clips (espeak-ng)
+        run: ENGINE=espeak-ng ./scripts/gen_speech.sh --words
 
       - name: Package (SD card layout)
         run: |
@@ -42,7 +45,6 @@ jobs:
       - name: Publish release (tags only)
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          apt-get install -y --no-install-recommends zip
           (cd out && zip -r ../babysmash-wii.zip apps)
           echo "release asset: babysmash-wii.zip"
 

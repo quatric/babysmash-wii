@@ -57,6 +57,9 @@ float gfx_text_width(float h, const char *s);
 void gfx_panel(float x, float y, float w, float h, u32 fill, u32 border);
 void gfx_bar(float x, float y, float w, float h, float frac, u32 rgba);
 
+/* ---- screenshot.c ------------------------------------------------------- */
+bool screenshot_save(char *outname, int outlen);
+
 /* ---- words.c ------------------------------------------------------------ */
 void words_init(void);
 bool word_exists(const char *s, int len);       /* upper-case, not NUL terminated */
@@ -94,6 +97,8 @@ typedef struct {
     bool exit_now;               /* Alt-F4 */
     bool opt_held;               /* Ctrl-Shift-Alt-O, + and - together, or all mouse buttons */
     u32  nav;                    /* NAV_* pressed this frame (options screen) */
+    bool shot_key;               /* F12 / Print Screen pressed */
+    bool shot_held;              /* 1 and 2 held together on a controller */
     const char *source;
 } Input;
 extern Input in;

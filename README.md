@@ -1,5 +1,7 @@
 # BabySmash for Wii
 
+**Version:** 0.3.0 · **Coder:** quatric
+
 A Wii homebrew port of Scott Hanselman's [BabySmash](https://github.com/shanselman/babysmash):
 let a baby mash every button and watch colourful shapes, letters and numbers pop up with giggles.
 Written in C with devkitPPC, libogc and GRRLIB; all shapes and letters are drawn as vector

@@ -2,7 +2,7 @@
 <app version="1">
   <name>BabySmash</name>
   <coder>quatric</coder>
-  <version>0.2.1</version>
+  <version>0.3.0</version>
   <release_date>20261013000000</release_date>
   <short_description>Let your baby smash buttons safely</short_description>
   <long_description>A Wii port of Scott Hanselman's BabySmash. Mash any button, key or mouse button and colourful shapes, letters and numbers pop up with giggles and spoken names. Type a word and the letters line up and say it.

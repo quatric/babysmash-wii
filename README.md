@@ -84,8 +84,10 @@ Needs devkitPro with devkitPPC and libogc, plus a few portlibs built into `./por
 
     ./scripts/build_controller_portlibs.sh   # libwiidrc, libwupc, libsicksaxis
     ./scripts/build_grrlib.sh                # GRRLIB
-    make                                     # -> boot.dol
+    make                                     # -> boot.dol and the compressed boot-xz.dol
     make dist                                # -> dist/apps/babysmash (copy `apps` to the SD card)
+
+`make` also writes `boot-xz.dol`, the same program packed into a self-extracting `.dol` a fraction of the size; `make dist` packages it as `boot.dol`. The first build downloads and builds [dolxz](https://github.com/FIX94/dolxz), which needs a host C compiler and liblzma (Debian/Ubuntu: `apt-get install liblzma-dev pkg-config`; macOS: `brew install xz`). `make NO_DOLXZ=1` skips this and uses the plain `.dol`.
 
 `scripts/make_icon.py` redraws `icon.png`.
 

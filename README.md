@@ -7,6 +7,13 @@ let a baby mash every button and watch colourful shapes, letters and numbers pop
 Written in C with devkitPPC, libogc and GRRLIB; all shapes and letters are drawn as vector
 triangles, so there are no image assets. Sounds and the word list are the originals.
 
+## Download
+
+Grab the latest build from the [latest release](../../releases/latest): `babysmash-wii.zip`. Every push to the main branch refreshes it, and tagged versions get their own entry on the [releases page](../../releases).
+
+1. Extract `babysmash-wii.zip` to the root of your SD card (or USB drive).
+2. Open BabySmash for Wii from the Homebrew Channel.
+
 ## What it does (ported from the original)
 
 * Every press spawns a figure at a random spot with a bouncy random spin/scale-in (the original's

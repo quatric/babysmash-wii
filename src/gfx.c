@@ -370,13 +370,16 @@ void gfx_text(float cx, float y, float h, const char *s, u32 rgba)
     const float x = cx - n * adv * 0.5f + adv * 0.5f;
     const float k = h / 7.0f;
     const float fillpx = h * 0.13f + 1.0f;      /* bold enough to survive composite/480i */
+    /* A thin drop shadow rather than a wide outline: on a real Wii's 480i output a
+     * dark stroke all around each letter bleeds into a smeared glow. */
+    const float sh = h >= 18 ? 2.0f : 1.0f;
     for (int pass = 0; pass < 2; pass++) {
-        const u32 c = pass == 0 ? RGBA(0, 0, 0, rgba & 255) : rgba;
+        const u32 c = pass == 0 ? RGBA(0, 0, 0, (rgba & 255) * 3 / 4) : rgba;
+        const float d = pass == 0 ? sh : 0;
         for (int i = 0; i < n; i++) {
             const int gi = glyph_index(s[i]);
             if (gi >= 0)
-                stroke_glyph(&glyphs[gi], x + i * adv, y + h * 0.5f, k, 0,
-                             (pass == 0 ? fillpx + 2.6f : fillpx) / k, 0, 0, c);
+                stroke_glyph(&glyphs[gi], x + i * adv + d, y + h * 0.5f + d, k, 0, fillpx / k, 0, 0, c);
         }
         b_flush();
     }

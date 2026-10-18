@@ -13,6 +13,8 @@
 #include <ctype.h>
 #include <ogcsys.h>
 #include <wiiuse/wpad.h>
+#include <input_wii.h>
+#include <wiiupdate.h>
 #include "bs.h"
 
 #define MAX_DISCS   30           /* ellipsesQueue limit in Controller.MouseDraw */
@@ -480,6 +482,29 @@ static void draw_info_label(void)
         gfx_text(SCR_W / 2, 16 + i * step, h, lines[i], RGBA(255, 230, 0, 255));
 }
 
+/* Update popup: shown when a newer release is out; it has the controls while it is up. */
+static wiiupdate_popup upd;
+static int upd_open;
+
+static void draw_update_popup(void)
+{
+    const float w = 560, h = upd.progress >= 0 || upd.detail[0] ? 150 : 124;
+    const float x = (SCR_W - w) / 2, y = (SCR_H - h) / 2;
+    GRRLIB_Rectangle(0, 0, SCR_W, SCR_H, RGBA(0, 0, 0, 110), true);
+    gfx_panel(x, y, w, h, RGBA(255, 255, 255, 255), RGBA(40, 40, 40, 255));
+    gfx_text(SCR_W / 2, y + 14, 22, upd.title, RGBA(40, 40, 40, 255));
+    gfx_text(SCR_W / 2, y + 50, 14, upd.text, RGBA(40, 40, 40, 255));
+    float row = y + 78;
+    if (upd.progress >= 0) {
+        gfx_bar(x + 60, row + 4, w - 120, 12, upd.progress / 100.0f, RGBA(40, 160, 70, 255));
+        row += 26;
+    } else if (upd.detail[0]) {
+        gfx_text(SCR_W / 2, row, 14, upd.detail, RGBA(30, 110, 200, 255));
+        row += 26;
+    }
+    gfx_text(SCR_W / 2, row + 8, 14, upd.hint, RGBA(90, 90, 90, 255));
+}
+
 static void draw(float fps)
 {
     GRRLIB_FillScreen(0xf5f5f5ff);                       /* WhiteSmoke */
@@ -512,6 +537,7 @@ static void draw(float fps)
     }
     if (exit_progress > 0)
         gfx_bar(SCR_W / 2 - 120, SCR_H - 40, 240, 14, exit_progress, RGBA(220, 40, 40, 255));
+    if (upd_open) draw_update_popup();
     if (in.cursor_on) gfx_cursor(in.x, in.y, cfg.cursor);
     GRRLIB_Render();
 }
@@ -531,6 +557,8 @@ int main(int argc, char **argv)
     input_init();
     WPAD_SetPowerButtonCallback(wpad_power_cb);
     atexit(input_shutdown);
+    WIIUPDATE_SetAppPath(argc > 0 ? argv[0] : NULL);
+    WIIUPDATE_Start("quatric", "babysmash-wii", APP_VERSION);
     snd_play(SND_STARTUP);
 
     u64 prev = gettime();
@@ -565,7 +593,13 @@ int main(int argc, char **argv)
         }
 #endif
         snd_update();
-        update(dt);
+        {
+            const int was_open = upd_open;
+            const int ust = WIIUPDATE_Popup(INPUT_ButtonsDown(), &upd);
+            if (ust == WIIUPDATE_POPUP_EXIT) quit_flag = true;
+            upd_open = ust == WIIUPDATE_POPUP_OPEN;
+            if (!upd_open && !was_open) update(dt);   /* no smashing behind the popup */
+        }
         hold = in.exit_held ? hold + dt : 0;
         exit_progress = hold / EXIT_HOLD;
         draw(fps);

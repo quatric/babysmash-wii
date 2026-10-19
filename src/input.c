@@ -1,7 +1,7 @@
 /*
  * Unified input: Wiimote (IR pointer, Nunchuk), Classic Controller, GameCube pad,
  * Wii U Pro Controller, Wii U GamePad, DualShock 3, USB mouse and USB keyboard.
- * The devices come from libinput-wii.
+ * The devices come from libwiiinput.
  *
  * Everything is reduced to:
  *   - a pointer + click (Wiimote IR / sticks / mouse, A or left button)

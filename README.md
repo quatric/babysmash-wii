@@ -1,6 +1,6 @@
 # BabySmash for Wii
 
-**Version:** 0.4.0 · **Coder:** quatric
+**Version:** 0.4.1 · **Coder:** quatric
 
 A Wii homebrew port of Scott Hanselman's [BabySmash](https://github.com/shanselman/babysmash):
 let a baby mash every button and watch colourful shapes, letters and numbers pop up with giggles.

@@ -565,6 +565,9 @@ int main(int argc, char **argv)
     WPAD_SetPowerButtonCallback(wpad_power_cb);
     atexit(input_shutdown);
     WIIUPDATE_SetAppPath(argc > 0 ? argv[0] : NULL);
+    /* Updates replace only these when they changed; speech/ clips are added only if missing. */
+    static const char *const upd_files[] = { "boot.dol", "icon.png", "meta.xml", NULL };
+    WIIUPDATE_SetUpdateFiles(upd_files);
     WIIUPDATE_Start("quatric", "babysmash-wii", APP_VERSION);
     snd_play(SND_STARTUP);
 

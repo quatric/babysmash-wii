@@ -1,6 +1,6 @@
 # BabySmash for Wii
 
-**Version:** 0.3.0 · **Coder:** quatric
+**Version:** 0.4.0 · **Coder:** quatric
 
 A Wii homebrew port of Scott Hanselman's [BabySmash](https://github.com/shanselman/babysmash):
 let a baby mash every button and watch colourful shapes, letters and numbers pop up with giggles.
@@ -28,7 +28,7 @@ Grab the latest build from the [latest release](../../releases/latest): `babysma
 * Click a figure (A / left mouse) and it jiggles, snaps, throbs or spins and laughs.
 * Click empty space and drag to leave a trail of discs (30 kept) with the bumblebee sound.
 * Mouse wheel plays the rising / falling sounds and zooms the figure under the cursor.
-* "BabySmash!" startup jingle, the info label, `Hand` / `Arrow` fun cursors, `--fps` overlay.
+* "BabySmash!" startup jingle, the info label (fades out after 10 seconds), `Hand` / `Arrow` fun cursors, `--fps` overlay.
 * Options screen (below) with every setting of the original that makes sense on a Wii.
 
 ## Controllers

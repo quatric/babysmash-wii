@@ -468,6 +468,10 @@ static void draw_figure(const Fig *f)
     }
 }
 
+/* The info label is shown for INFO_SHOW_S seconds after startup, then fades out. */
+#define INFO_SHOW_S 10.0f
+#define INFO_FADE_S 1.5f
+
 static void draw_info_label(void)
 {
     static const char *lines[] = {
@@ -476,10 +480,13 @@ static void draw_info_label(void)
         "Hold Ctrl-Shift-Alt-O (or + and -) 3 secs for options",
         "Alt-F4 (or hold HOME 2 secs) to exit",
     };
+    if (now_s >= INFO_SHOW_S + INFO_FADE_S) return;          /* gone once it has faded out */
+    const float vis = now_s <= INFO_SHOW_S ? 1.0f : 1.0f - (now_s - INFO_SHOW_S) / INFO_FADE_S;
+    const u32 a = (u32)(vis * 255 + 0.5f);
     const float h = 14, step = 22;
-    gfx_panel(14, 12, 612, 4 * step + 6, RGBA(24, 24, 24, 255), RGBA(255, 230, 0, 255));
+    gfx_panel(14, 12, 612, 4 * step + 6, RGBA(24, 24, 24, a), RGBA(255, 230, 0, a));
     for (int i = 0; i < 4; i++)
-        gfx_text(SCR_W / 2, 16 + i * step, h, lines[i], RGBA(255, 230, 0, 255));
+        gfx_text(SCR_W / 2, 16 + i * step, h, lines[i], RGBA(255, 230, 0, a));
 }
 
 /* Update popup: shown when a newer release is out; it has the controls while it is up. */
